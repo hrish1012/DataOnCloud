@@ -34,6 +34,7 @@ class BaseConnector(ABC):
 
     source_name: str = "unnamed_source"
     schema: Optional[List[SchemaField]] = None
+    key_field: Optional[str] = None
 
     @abstractmethod
     def extract(self) -> List[Dict[str, Any]]:
@@ -66,7 +67,7 @@ class BaseConnector(ABC):
             loaded_count = 0
             if valid_records:
                 loader = BigQueryLoader()
-                loaded_count = loader.load(self.source_name, valid_records)
+                loaded_count = loader.load(self.source_name, valid_records, key_field=self.key_field)
 
             result = IngestionResult(
                 run_id=run_id, source_name=self.source_name, status="success",

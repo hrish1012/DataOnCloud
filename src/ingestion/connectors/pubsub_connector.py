@@ -6,7 +6,9 @@ from google.api_core.exceptions import DeadlineExceeded
 
 from src.ingestion.connectors.base import BaseConnector
 from src.common.gcp_config import GCP_PROJECT_ID
+from src.common.logger import get_logger
 
+logger = get_logger(__name__)
 
 class PubSubConnector(BaseConnector):
     """Pulls a batch of messages from a Pub/Sub subscription."""
@@ -21,13 +23,21 @@ class PubSubConnector(BaseConnector):
         )
 
     def extract(self) -> List[Dict[str, Any]]:
-        response = self.subscriber.pull(
-            request={
-                "subscription": self.subscription_path,
-                "max_messages": self.max_messages,
-            },
-            timeout=10,
-        )
+        try:
+            response = self.subscriber.pull(
+                request={
+                    "subscription": self.subscription_path,
+                    "max_messages": self.max_messages,
+                },
+                timeout=10,
+            )
+        except DeadlineExceeded:
+            logger.info("No new messages available in subscription", extra={
+                "extra_fields": {"subscription": self.subscription_id}
+            })
+            # No messages arrived within the timeout — this is normal for an
+            # idle real-time source, not a failure.
+            return []
 
         records = []
         ack_ids = []

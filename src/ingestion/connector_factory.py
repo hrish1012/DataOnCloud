@@ -25,6 +25,7 @@ def load_connectors(config_path: str = "src/ingestion/config/sources.yaml") -> L
         source_type = source_cfg.pop("type")
         source_name = source_cfg.pop("name")
         schema_cfg = source_cfg.pop("schema", None)
+        key_field_cfg = source_cfg.pop("key_field", None)
 
         connector_class = CONNECTOR_REGISTRY.get(source_type)
         if connector_class is None:
@@ -34,6 +35,9 @@ def load_connectors(config_path: str = "src/ingestion/config/sources.yaml") -> L
 
         if schema_cfg:
             connector.schema = [SchemaField(**f) for f in schema_cfg]
+
+        if key_field_cfg:
+            connector.key_field = key_field_cfg
 
         connectors.append(connector)
 
