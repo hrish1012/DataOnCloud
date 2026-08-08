@@ -107,7 +107,7 @@ def health_check():
 
 
 @app.get("/customers")
-def get_customers(limit: int = 5):
+def get_customers(limit: int = 10):
     return fetch_table("customers_csv", "customer_id, name, email, signup_date", limit)
 
 
@@ -119,3 +119,12 @@ def get_users(limit: int = 10):
 @app.get("/orders")
 def get_orders(limit: int = 10):
     return fetch_table("orders_stream", "order_id, product, quantity, price, order_timestamp", limit, order_by="order_timestamp")
+
+@app.get("/ingestion/runs")
+def get_ingestion_runs(limit: int = 10):
+    return fetch_table(
+        "ingestion_audit_log",
+        "run_id, source_name, status, rows_extracted, rows_valid, rows_rejected, rows_loaded, error_message, started_at, finished_at",
+        limit,
+        order_by="started_at",
+    )

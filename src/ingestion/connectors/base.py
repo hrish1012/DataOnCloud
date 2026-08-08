@@ -81,6 +81,7 @@ class BaseConnector(ABC):
             logger.info("Ingestion run succeeded", extra={"extra_fields": {
                 "run_id": run_id, "rows_valid": result.rows_valid, "rows_rejected": result.rows_rejected
             }})
+            self._write_audit_record(result)
             return result
 
         except Exception as e:
@@ -92,4 +93,14 @@ class BaseConnector(ABC):
             logger.error("Ingestion run failed", extra={"extra_fields": {
                 "run_id": run_id, "error": str(e)
             }})
+            self._write_audit_record(result)
             return result
+
+    def _write_audit_record(self, result: IngestionResult):
+        try:
+            loader = BigQueryLoader()
+            loader.load("ingestion_audit_log", [result.__dict__], key_field="run_id")
+        except Exception as e:
+            logger.error("Failed to write audit record", extra={
+                "extra_fields": {"run_id": result.run_id, "error": str(e)}
+            })
