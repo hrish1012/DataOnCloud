@@ -6,12 +6,13 @@ from src.ingestion.connectors.base import BaseConnector
 from src.ingestion.connectors.file_connector import FileConnector
 from src.ingestion.connectors.api_connector import APIConnector
 from src.common.schema_validator import SchemaField
-
+from src.ingestion.connectors.pubsub_connector import PubSubConnector
 
 # Maps the "type" string in YAML to the actual connector class that handles it
 CONNECTOR_REGISTRY = {
     "file": FileConnector,
     "api": APIConnector,
+    "pubsub": PubSubConnector,
 }
 
 

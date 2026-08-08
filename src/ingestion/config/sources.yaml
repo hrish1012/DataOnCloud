@@ -23,3 +23,9 @@ sources:
         dtype: str
       - field: email
         dtype: str
+
+
+  - name: orders_stream
+    type: pubsub
+    subscription_id: orders-events-sub
+    max_messages: 10
