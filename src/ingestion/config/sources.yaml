@@ -1,0 +1,25 @@
+sources:
+  - name: customers_csv
+    type: file
+    file_path: data/raw/customers.csv
+    schema:
+      - field: customer_id
+        dtype: int
+      - field: name
+        dtype: str
+      - field: email
+        dtype: str
+      - field: signup_date
+        dtype: str
+
+  - name: users_api
+    type: api
+    url: https://jsonplaceholder.typicode.com/users
+    timeout: 10
+    schema:
+      - field: id
+        dtype: int
+      - field: name
+        dtype: str
+      - field: email
+        dtype: str
