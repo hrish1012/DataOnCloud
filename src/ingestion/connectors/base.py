@@ -5,6 +5,7 @@ from datetime import datetime, timezone
 from typing import List, Dict, Any,Optional
 from src.common.schema_validator import validate_records, SchemaField
 from src.common.logger import get_logger
+from src.common.bq_loader import BigQueryLoader
 
 logger = get_logger(__name__)
 
@@ -21,6 +22,7 @@ class IngestionResult:
     error_message: str = ""
     started_at: str = ""
     finished_at: str = ""
+    rows_loaded: int = 0
 
 
 class BaseConnector(ABC):
@@ -61,6 +63,11 @@ class BaseConnector(ABC):
                     "sample_error": rejected_records[0]["errors"],
                 }})
 
+            loaded_count = 0
+            if valid_records:
+                loader = BigQueryLoader()
+                loaded_count = loader.load(self.source_name, valid_records)
+
             result = IngestionResult(
                 run_id=run_id, source_name=self.source_name, status="success",
                 rows_extracted=len(records),
@@ -68,6 +75,7 @@ class BaseConnector(ABC):
                 rows_rejected=len(rejected_records),
                 started_at=started_at,
                 finished_at=datetime.now(timezone.utc).isoformat(),
+                rows_loaded=loaded_count
             )
             logger.info("Ingestion run succeeded", extra={"extra_fields": {
                 "run_id": run_id, "rows_valid": result.rows_valid, "rows_rejected": result.rows_rejected
