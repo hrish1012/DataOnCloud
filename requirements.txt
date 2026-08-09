@@ -7,3 +7,5 @@ google-cloud-pubsub
 python-dotenv
 fastapi
 uvicorn
+pytest
+pytest-mock
