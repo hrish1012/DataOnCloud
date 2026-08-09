@@ -32,6 +32,7 @@ def test_failed_extraction_does_not_raise(mocker):
 
 def test_successful_extraction_returns_success(mocker):
     mocker.patch("src.ingestion.connectors.base.BaseConnector._write_audit_record")
+    mocker.patch("src.common.bq_loader.BigQueryLoader.__init__", return_value=None)
     mocker.patch("src.common.bq_loader.BigQueryLoader.load", return_value=1)
 
     connector = WorkingConnector()
@@ -43,6 +44,7 @@ def test_successful_extraction_returns_success(mocker):
 
 def test_every_run_gets_a_unique_run_id(mocker):
     mocker.patch("src.ingestion.connectors.base.BaseConnector._write_audit_record")
+    mocker.patch("src.common.bq_loader.BigQueryLoader.__init__", return_value=None)
     mocker.patch("src.common.bq_loader.BigQueryLoader.load", return_value=1)
 
     connector = WorkingConnector()
